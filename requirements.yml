@@ -1,0 +1,2 @@
+# installed as ansible-galaxy install https://github.com/rsvalerio/docker-engine.git
+- https://github.com/rsvalerio/docker-engine.git

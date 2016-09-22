@@ -1,0 +1,58 @@
+version: '2'
+
+networks:
+  default:
+    external:
+      name: ci
+
+services:
+  consul:
+    image: gliderlabs/consul-server:latest
+    hostname: consul
+    ports:
+      - 8300:8300
+      - 8400:8400
+      - 8500:8500
+      - 8600:53/udp
+    command: -data-dir /tmp/consul -bootstrap -client 0.0.0.0 -advertise {{ansible_eth1.ipv4.address}}
+
+  registrator:
+    image: gliderlabs/registrator:master
+    hostname: registrator
+    links:
+      - consul
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: consul://consul:8500
+
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: always
+    hostname: gitlab
+    ports:
+      - "{{ git.port }}:80"
+    volumes:
+      - /srv/gitlab/config:/etc/gitlab
+      - /srv/gitlab/logs:/var/log/gitlab
+      - /srv/gitlab/data:/var/opt/gitlab
+
+  nexus:
+    image: sonatype/nexus3
+    hostname: nexus
+    ports:
+      - {{ nexus.port }}:8081
+      - 8443:8443
+      - 9418:9418
+      - 29418:29418
+
+  jenkins:
+    hostname: jenkins
+    image: jenkinsci/jenkins
+    ports:
+      - {{ jenkins.port }}:8080
+      - 50000:50000
+    links:
+      - consul
+      - registrator
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false

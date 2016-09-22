@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.define "manager1", autostart: true do |manager1|
+    manager1.vm.network "public_network", bridge: "en1: Wi-Fi (AirPort)"
+    manager1.vm.box = "ubuntu/trusty64"
+    manager1.vm.hostname = "manager1"
+    manager1.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+      ansible.groups = {
+        "manager" => ["manager1"],
+        "worker" => ["worker1","worker2"]
+      }
+    end
+  end
+
+  config.vm.define "worker1", autostart: true do |worker1|
+    worker1.vm.box = "ubuntu/trusty64"
+    worker1.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+    end
+  end
+
+  config.vm.define "worker2", autostart: true do |worker2|
+    worker2.vm.box = "ubuntu/trusty64"
+    worker2.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+    end
+  end
+
+end

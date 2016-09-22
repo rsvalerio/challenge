@@ -1,0 +1,33 @@
+---
+- name: Verify if network exists
+  shell: docker network ls
+  register: result_docker_networks
+  changed_when: No
+
+- debug: var=result_docker_networks
+
+- name: Create a base network
+  command: docker network create ci
+  when:
+    - result_docker_networks.stderr == ""
+    - "'ci' not in result_docker_networks.stdout"
+
+- name: Create compose directory
+  file:
+    path: /opt/base
+    state: directory
+
+- name: Copy compose file
+  template:
+    src: docker-compose.yml
+    dest: /opt/base/docker-compose.yml
+
+- name: Create Consul, Registrator, Jenkins, Git and Nexus using docker compose
+  command: >
+    docker-compose up -d --remove-orphans
+  args:
+    chdir: /opt/base/
+  register: result_create_base
+
+- debug: var=result_create_base
+

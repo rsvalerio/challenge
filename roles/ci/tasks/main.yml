@@ -1,0 +1,10 @@
+---
+
+- include: prepare.yml
+  tags: prepare
+
+- include: compose.yml
+  tags: compose
+
+- include: jenkins.yml
+  tags: jenkins

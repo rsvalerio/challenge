@@ -1,0 +1,54 @@
+---
+- name: Wait for Jenkins
+  wait_for:
+    host: '{{ jenkins_ip }}'
+    port: '{{ jenkins_port }}'
+    delay: 1
+    timeout: 300
+  delegate_to: localhost
+  become: no
+
+- name: Copy jenkins-cli.jar to [playbook_dir]/facts/ folder
+  get_url:
+    url: 'http://{{jenkins_ip}}:{{jenkins_port}}/jnlpJars/jenkins-cli.jar'
+    dest: '{{playbook_dir}}/facts/jenkins-cli.jar'
+  register: jarfile_get
+  delegate_to: localhost
+  become: no
+
+#  until: "'OK' in jarfile_get.msg or 'file already exists' in jarfile_get.msg"
+#  retries: 5
+#  delay: 10
+
+- debug: var=jarfile_get
+#- name: Baixar a lista atualizada de plugins do jenkins
+#  get_url: url=http://updates.jenkins-ci.org/update-center.json dest='./facts/updates_jenkins.json' mode=0444
+
+#- name: Atualizar plugins do jenkins
+#  shell: "cat ./facts/updates_jenkins.json | sed '1d;$d' | curl -X POST -H 'Accept: application/json' -d @- http://localhost:8080/updateCenter/byId/default/postBack"
+
+- name: Install and update jenkins plugins
+  command: 'java -jar ./facts/jenkins-cli.jar -s http://{{jenkins_ip}}:{{jenkins_port}}/ install-plugin {{ item }}'
+  with_items: jenkins_plugins
+  register: response_plugins_update
+  delegate_to: localhost
+  become: no
+  when: '{{ jenkins_install_plugins }}'
+
+- name: Restart jenkins
+  command: 'java -jar ./facts/jenkins-cli.jar -s http://{{jenkins_ip}}:{{jenkins_port}}/ restart'
+  delegate_to: localhost
+  become: no
+  when: '{{ jenkins_install_plugins }}'
+
+- name: Wait for Jenkins
+  wait_for:
+    host: '{{ jenkins_ip }}'
+    port: '{{ jenkins_port }}'
+    delay: 1
+    timeout: 300
+  delegate_to: localhost
+  become: no
+  when: '{{ jenkins_install_plugins }}'
+
+- debug: var=response_plugins_update

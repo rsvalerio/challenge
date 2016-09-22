@@ -1,0 +1,60 @@
+---
+git_port: 80
+git_ip: 192.168.1.34
+git_user: root
+git_password: admin123 #was: 5iveL!fe
+git_token: Vya4Fxgrz6v_fpsNacjJ
+
+nexus_port: 8081
+
+jenkins_port: 8080
+jenkins_ip: 192.168.1.34
+jenkins_plugins:
+   - workflow-aggregator  # Pipeline plugin
+   - pipeline-maven       # Maven integration to pipeline plugin
+   - config-file-provider # Possible to create a setting.xml file inside jenkins, to use with pipeline
+   - git
+   - docker-workflow      #
+
+jenkins_install_plugins: False
+
+#   - git
+
+# - ace-editor
+# - branch-api
+# - cloudbees-folder
+# - credentials
+# - durable-task
+# - git
+# - git-client
+# - git-server
+# - handlebars
+# - icon-shim
+# - jquery-detached
+# - junit
+# - lockable-resources
+# - mailer
+# - matrix-project
+# - mock-slave
+# - momentjs
+# - pipeline-build-step
+# - pipeline-graph-analysis
+# - pipeline-input-step
+# - pipeline-rest-api
+# - pipeline-stage-step
+# - pipeline-stage-view
+# - scm-api
+# - script-security
+# - ssh-credentials
+# - structs
+# - workflow-aggregator
+# - workflow-api
+# - workflow-basic-steps
+# - workflow-cps
+# - workflow-cps-global-lib
+# - workflow-durable-task-step
+# - workflow-job
+# - workflow-multibranch
+# - workflow-scm-step
+# - workflow-step-api
+# - workflow-support

@@ -1,0 +1,4 @@
+PyYAML
+docker-py
+docker-compose==1.7.0
+python-jenkins
